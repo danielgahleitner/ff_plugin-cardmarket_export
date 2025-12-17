@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta
+            name="color-scheme"
+            content="dark"
+        />
+        <style>
+            :root {
+                --bg: #070a12;
+                --panel: rgba(255, 255, 255, 0.08);
+                --panel2: rgba(255, 255, 255, 0.12);
+
+                --text: rgba(255, 255, 255, 0.92);
+                --muted: rgba(255, 255, 255, 0.68);
+                --muted2: rgba(255, 255, 255, 0.52);
+                --border: rgba(255, 255, 255, 0.14);
+
+                --ok: #5eead4;
+                --warn: #fbbf24;
+                --bad: #fb7185;
+
+                --shadow: 0 18px 55px rgba(0, 0, 0, 0.42);
+                --radius: 18px;
+            }
+
+            * {
+                box-sizing: border-box;
+            }
+
+            body {
+                margin: 0;
+                width: 400px;
+
+                color: var(--text);
+                font: 13px/1.35 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+
+                background: radial-gradient(
+                        1100px 520px at 10% -10%,
+                        rgba(94, 234, 212, 0.16),
+                        transparent 60%
+                    ),
+                    radial-gradient(
+                        1100px 520px at 90% 0%,
+                        rgba(59, 130, 246, 0.22),
+                        transparent 55%
+                    ),
+                    radial-gradient(
+                        900px 480px at 50% 120%,
+                        rgba(251, 191, 36, 0.1),
+                        transparent 55%
+                    ),
+                    var(--bg);
+
+                padding: 12px;
+
+                /* Keep the popup from turning into a full-page scroll */
+                overflow: hidden;
+            }
+
+            .app {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+
+                max-height: 640px;
+            }
+
+            /* Header */
+            .header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 10px;
+                padding: 10px 10px 8px;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                background: rgba(0, 0, 0, 0.18);
+                border-radius: var(--radius);
+                box-shadow: var(--shadow);
+            }
+
+            .brand {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                min-width: 0;
+            }
+
+            .logo {
+                width: 34px;
+                height: 34px;
+                border-radius: 12px;
+                background: rgba(255, 255, 255, 0.08);
+                border: 1px solid rgba(255, 255, 255, 0.14);
+                box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+                flex: 0 0 auto;
+            }
+
+            .brandText {
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+                min-width: 0;
+            }
+
+            .title {
+                font-weight: 850;
+                letter-spacing: 0.2px;
+                font-size: 14px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .subtitle {
+                color: var(--muted2);
+                font-size: 12px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .pill {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                padding: 6px 10px;
+                border-radius: 999px;
+                border: 1px solid var(--border);
+                background: rgba(255, 255, 255, 0.07);
+                flex: 0 0 auto;
+            }
+
+            .dot {
+                width: 8px;
+                height: 8px;
+                border-radius: 999px;
+                background: var(--warn);
+                box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.14);
+            }
+            .dot.ok {
+                background: var(--ok);
+                box-shadow: 0 0 0 3px rgba(94, 234, 212, 0.14);
+            }
+            .dot.bad {
+                background: var(--bad);
+                box-shadow: 0 0 0 3px rgba(251, 113, 133, 0.14);
+            }
+
+            /* Panel */
+            .panel {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                padding: 12px;
+                background: rgba(255, 255, 255, 0.07);
+                border: 1px solid rgba(255, 255, 255, 0.13);
+                border-radius: var(--radius);
+                box-shadow: var(--shadow);
+
+                min-height: 0;
+
+                /* NEW: ensures there is breathing room at bottom even if log is visible */
+                padding-bottom: 16px;
+            }
+
+            .grid2 {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+
+            .btn {
+                appearance: none;
+                border: 1px solid var(--border);
+                background: rgba(255, 255, 255, 0.1);
+                color: var(--text);
+                padding: 10px 10px;
+                border-radius: 14px;
+                font-weight: 780;
+                cursor: pointer;
+                user-select: none;
+                transition: transform 0.06s ease, filter 0.15s ease, background 0.15s ease;
+            }
+            .btn:hover {
+                filter: brightness(1.06);
+            }
+            .btn:active {
+                transform: translateY(1px);
+            }
+            .btn.primary {
+                border-color: rgba(94, 234, 212, 0.38);
+                background: linear-gradient(
+                    180deg,
+                    rgba(94, 234, 212, 0.16),
+                    rgba(255, 255, 255, 0.08)
+                );
+            }
+            .btn.ghost {
+                background: rgba(0, 0, 0, 0.18);
+            }
+            .btn.danger {
+                border-color: rgba(251, 113, 133, 0.45);
+                color: #ffd6dc;
+                background: rgba(251, 113, 133, 0.08);
+            }
+            .btn:disabled {
+                opacity: 0.55;
+                cursor: not-allowed;
+                filter: none;
+            }
+
+            .row {
+                display: grid;
+                gap: 8px;
+            }
+
+            .field {
+                display: grid;
+                gap: 6px;
+                padding: 10px;
+                border-radius: 14px;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                background: rgba(0, 0, 0, 0.18);
+            }
+
+            label {
+                color: var(--muted);
+                font-size: 12px;
+            }
+
+            select,
+            input[type='number'] {
+                width: 100%;
+                padding: 9px 10px;
+                border-radius: 12px;
+                border: 1px solid rgba(255, 255, 255, 0.14);
+                background: rgba(0, 0, 0, 0.22);
+                color: var(--text);
+                outline: none;
+            }
+
+            .hintLine {
+                color: var(--muted2);
+                font-size: 12px;
+            }
+
+            /* Stats */
+            .stats {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 8px;
+            }
+            .stat {
+                background: rgba(0, 0, 0, 0.18);
+                border: 1px solid rgba(255, 255, 255, 0.12);
+                border-radius: 14px;
+                padding: 8px;
+            }
+            .stat .k {
+                color: var(--muted2);
+                font-size: 11px;
+            }
+            .stat .v {
+                font-weight: 850;
+                margin-top: 2px;
+                font-size: 13px;
+            }
+
+            /* Progress */
+            .progressWrap {
+                display: grid;
+                gap: 8px;
+            }
+            .progressTop {
+                display: flex;
+                justify-content: space-between;
+                gap: 10px;
+                color: var(--muted);
+                font-size: 12px;
+            }
+            .bar {
+                height: 10px;
+                background: rgba(255, 255, 255, 0.1);
+                border: 1px solid rgba(255, 255, 255, 0.14);
+                border-radius: 999px;
+                overflow: hidden;
+            }
+            .bar > div {
+                height: 100%;
+                width: 0%;
+                background: linear-gradient(
+                    90deg,
+                    rgba(94, 234, 212, 0.95),
+                    rgba(59, 130, 246, 0.95)
+                );
+                transition: width 0.18s ease;
+            }
+
+            /* Footer buttons */
+            .footerBtns {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 8px;
+            }
+
+            /* Log */
+            .logWrap {
+                border: 1px solid rgba(255, 255, 255, 0.12);
+                border-radius: 14px;
+                overflow: hidden;
+                background: rgba(0, 0, 0, 0.2);
+                display: flex;
+                flex-direction: column;
+
+                max-height: 190px;
+
+                /* NEW: a little breathing room at the bottom of panel */
+                margin-bottom: 6px;
+            }
+
+            .logHead {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 8px 10px;
+                color: var(--muted);
+                font-size: 12px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                background: rgba(255, 255, 255, 0.03);
+            }
+
+            .log {
+                padding: 8px 10px;
+                color: rgba(255, 255, 255, 0.72);
+                overflow: auto;
+                white-space: pre-wrap;
+                font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+                    'Liberation Mono', monospace;
+                font-size: 11px;
+                line-height: 1.35;
+            }
+
+            .copyright {
+                text-align: center;
+                color: rgba(255, 255, 255, 0.46);
+                font-size: 11px;
+                padding: 2px 0 0;
+            }
+
+            .hidden {
+                display: none !important;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="app">
+            <div class="header">
+                <div class="brand">
+                    <img
+                        class="logo"
+                        src="icons/icon-48.png"
+                        srcset="icons/icon-96.png 2x"
+                        alt="Cardmarket Export"
+                    />
+                    <div class="brandText">
+                        <div class="title">Cardmarket Export</div>
+                        <div class="subtitle">CSV • ManaBox • Moxfield • Archidekt</div>
+                    </div>
+                </div>
+
+                <div
+                    class="pill"
+                    id="statePill"
+                    title="Status"
+                >
+                    <span
+                        class="dot"
+                        id="stateDot"
+                    ></span>
+                    <span id="stateText">Idle</span>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="grid2">
+                    <button
+                        id="exportPage"
+                        class="btn"
+                    >
+                        Export page
+                    </button>
+                    <button
+                        id="exportAll"
+                        class="btn primary"
+                    >
+                        Export all pages
+                    </button>
+                </div>
+
+                <div class="row">
+                    <div class="field">
+                        <label for="exportFormat">Export format</label>
+                        <select id="exportFormat">
+                            <option value="csv">Detailed CSV</option>
+                            <option value="manabox">ManaBox import CSV</option>
+                            <option value="moxfield">Moxfield import</option>
+                            <option value="archidekt">Archidekt import</option>
+                        </select>
+                        <div class="hintLine">
+                            Tip: ManaBox needs correct Set codes + Scryfall IDs.
+                        </div>
+                    </div>
+
+                    <div
+                        class="field hidden"
+                        id="shippingField"
+                    >
+                        <label for="shippingMode">Shipping split (ManaBox only)</label>
+                        <select id="shippingMode">
+                            <option value="none">None</option>
+                            <option value="equal">Equal per card</option>
+                            <option value="proportional">Proportional by card value</option>
+                        </select>
+                        <div class="hintLine">
+                            Adds your shipping cost into each card’s purchase price.
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label for="maxPages">Max pages (safety cap)</label>
+                        <input
+                            id="maxPages"
+                            type="number"
+                            min="1"
+                            placeholder="e.g. 10"
+                        />
+                    </div>
+                </div>
+
+                <div class="stats">
+                    <div class="stat">
+                        <div class="k">Phase</div>
+                        <div
+                            class="v"
+                            id="phase"
+                        >
+                            Idle
+                        </div>
+                    </div>
+                    <div class="stat">
+                        <div class="k">Progress</div>
+                        <div
+                            class="v"
+                            id="count"
+                        >
+                            —
+                        </div>
+                    </div>
+                    <div class="stat">
+                        <div class="k">ETA</div>
+                        <div
+                            class="v"
+                            id="eta"
+                        >
+                            —
+                        </div>
+                    </div>
+                </div>
+
+                <div class="progressWrap">
+                    <div class="progressTop">
+                        <div id="hint">Ready</div>
+                        <div id="rows">Rows: —</div>
+                    </div>
+                    <div class="bar"><div id="barFill"></div></div>
+                </div>
+
+                <div class="footerBtns">
+                    <button
+                        id="cancel"
+                        class="btn danger"
+                        disabled
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        id="toggleLog"
+                        class="btn ghost"
+                    >
+                        Show log
+                    </button>
+                    <button
+                        id="clear"
+                        class="btn ghost"
+                        title="Clear log"
+                    >
+                        Clear
+                    </button>
+                </div>
+
+                <!-- Log is hidden by default -->
+                <div
+                    class="logWrap hidden"
+                    id="logWrap"
+                >
+                    <div class="logHead">
+                        <span>Live log</span>
+                        <span
+                            class="subtitle"
+                            id="lastLine"
+                            >—</span
+                        >
+                    </div>
+                    <div
+                        class="log"
+                        id="log"
+                    ></div>
+                </div>
+            </div>
+
+            <div class="copyright">© Daniel Gahleitner</div>
+        </div>
+
+        <script src="popup.js"></script>
+    </body>
+</html>

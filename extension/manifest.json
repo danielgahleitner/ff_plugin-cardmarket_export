@@ -1,0 +1,29 @@
+{
+    "manifest_version": 3,
+    "name": "Cardmarket Purchases → Export",
+    "version": "1.1.0",
+    "description": "Export your Cardmarket purchases into CSV formats (CSV / Archidekt / Moxfield / ManaBox).",
+    "action": {
+        "default_title": "Export Cardmarket purchases",
+        "default_popup": "popup.html"
+    },
+    "background": {
+        "scripts": ["background.js"]
+    },
+    "icons": {
+        "48": "icons/icon-48.png",
+        "96": "icons/icon-96.png"
+    },
+    "permissions": ["activeTab", "scripting", "downloads"],
+    "host_permissions": ["https://www.cardmarket.com/*", "https://api.scryfall.com/*"],
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "cardmarket-purchase-export@daniel.gahleitner",
+            "update_url": "https://raw.githubusercontent.com/danielgahleitner/ff_plugin-cardmarket_export/main/firefox/updates.json",
+            "data_collection_permissions": {
+                "required": ["none"],
+                "optional": []
+            }
+        }
+    }
+}
